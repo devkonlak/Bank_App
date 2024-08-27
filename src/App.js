@@ -1,4 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 import "./App.css";
 
 function App() {
@@ -14,41 +26,44 @@ function App() {
   }, [searchTerm]); // Refetch data whenever the searchTerm changes
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Search by name"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-bar"
-      />
-      {data.length > 0 && (
-        <table className="customer-table">
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>City</th>
-              <th>Mobile No</th>
-              <th>Occupation</th>
-              <th>Date of Birth</th>
-            </tr>
-          </thead>
-          <tbody>
+    <Container>
+      <Box mt={4}>
+        <TextField
+          label="Search by name"
+          varient="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          fullWidth
+          className="search-bar"
+        />
+      </Box>
+      <tableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>City</TableCell>
+              <TableCell>Mobile no</TableCell>
+              <TableCell>Occupation</TableCell>
+              <TableCell>Date Of Birth</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {data.map((d, i) => (
-              <tr key={i}>
-                <td>{d.First_name}</td>
-                <td>{d.Last_name}</td>
-                <td>{d.city}</td>
-                <td>{d.mobile_no}</td>
-                <td>{d.occupation}</td>
-                <td>{d.dob}</td>
-              </tr>
+              <TableRow key={i}>
+                <TableCell>{d.First_name}</TableCell>
+                <TableCell>{d.Last_name}</TableCell>
+                <TableCell>{d.city}</TableCell>
+                <TableCell>{d.mobile_no}</TableCell>
+                <TableCell>{d.occupation}</TableCell>
+                <TableCell>{d.dob}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+          </TableBody>
+        </Table>
+      </tableContainer>
+    </Container>
   );
 }
 
