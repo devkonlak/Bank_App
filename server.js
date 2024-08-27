@@ -22,18 +22,27 @@ app.get("/", (req, res) => {
   return res.status(200).json("From Backend");
 });
 
-// Define a route to fetch customer data based on a search query
+// Define a route to fetch customer data based on cust_id
 app.get("/customers", (req, res) => {
-  const searchQuery = req.query.name ? req.query.name : ""; // Get the search query from the request, default to an empty string if not provided
+  const custId = req.query.cust_id ? req.query.cust_id : ""; // Ensure custId is defined here
 
-  // SQL query to select customers whose first or last name matches the search query
+  // SQL query to select customer details based on cust_id
   const sql = `
-    SELECT * 
-    FROM customer 
-    WHERE First_name LIKE ? OR Last_name LIKE ?`;
+    SELECT c.cust_id,
+    c.First_name,
+    c.Last_name,
+    c.city,
+    a.acc_status,
+    a.acc_number,
+    IFNULL(t.transaction_type, 'No Transaction') AS transaction_type, 
+    IFNULL(t.transaction_amount, 0) AS transaction_amount
+    FROM customer c
+    LEFT JOIN account a ON c.cust_id = a.cust_id
+    LEFT JOIN tran_details t ON a.acc_number = t.acc_number
+    WHERE c.cust_id LIKE ?`;
 
-  // Execute the query with the search parameter
-  db.query(sql, [`%${searchQuery}%`, `%${searchQuery}%`], (err, data) => {
+  // Execute the query with the provided cust_id
+  db.query(sql, [`%${custId}%`], (err, data) => {
     if (err) {
       console.error("Database query error:", err);
       return res.status(500).json("Error");
@@ -41,6 +50,7 @@ app.get("/customers", (req, res) => {
     return res.status(200).json(data);
   });
 });
+
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => {
