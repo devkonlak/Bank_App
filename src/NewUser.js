@@ -7,10 +7,8 @@ import {
   Typography,
   Container,
 } from "@mui/material";
-import axios from "axios"; // Import Axios
-
+import axios from "axios";
 const NewUser = () => {
-  // State to hold form data
   const [customerData, setCustomerData] = useState({
     cust_id: "",
     first_name: "",
@@ -21,7 +19,6 @@ const NewUser = () => {
     dob: "",
   });
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCustomerData((prevState) => ({
@@ -30,19 +27,16 @@ const NewUser = () => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Send a POST request to the server
       const response = await axios.post(
         "http://localhost:3002/add-customer",
         customerData
       );
       console.log(response.data.message);
 
-      // Optionally, you can reset the form after submission
       setCustomerData({
         cust_id: "",
         first_name: "",
@@ -53,7 +47,6 @@ const NewUser = () => {
         dob: "",
       });
 
-      // Display success message or navigate as needed
       alert("Customer added successfully!");
     } catch (error) {
       console.error("There was an error adding the customer:", error);
@@ -174,7 +167,7 @@ const NewUser = () => {
           </Grid>
         </form>
       </Box>
-    </Container> 
+    </Container>
   );
 };
 

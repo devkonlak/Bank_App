@@ -1,32 +1,51 @@
-// Import required modules
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
 
-const PORT = 3002; // Define the port to run the server
+const PORT = 3002;
 
-const app = express(); // Initialize the Express app
+const app = express();
 
-app.use(cors()); // Enable Cross-Origin Resource Sharing (CORS) for the app
+app.use(cors());
+app.use(express.json());
 
-// Set up MySQL database connection
 const db = mysql.createConnection({
-  host: "localhost", // Database host
-  user: "root", // Database user
-  password: "Kong@rasu07", // Database user password
-  database: "Bank", // Name of the database
+  host: "localhost",
+  user: "root",
+  password: "Kong@rasu07",
+  database: "Bank",
 });
 
-// Define a route for the root URL
 app.get("/", (req, res) => {
   return res.status(200).json("From Backend");
 });
 
-// Define a route to fetch customer data based on cust_id
-app.get("/customers", (req, res) => {
-  const custId = req.query.cust_id ? req.query.cust_id : ""; // Ensure custId is defined here
+// Route to add a new customer
+app.post("/add-customer", (req, res) => {
+  const { cust_id, first_name, last_name, city, mobile_no, occupation, dob } =
+    req.body;
 
-  // SQL query to select customer details based on cust_id
+  const sql = `
+    INSERT INTO customer (cust_id, First_name, Last_name, city, mobile_no, occupation, dob)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [cust_id, first_name, last_name, city, mobile_no, occupation, dob],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting data:", err);
+        return res.status(500).json({ message: "Failed to add customer" });
+      }
+      return res.status(200).json({ message: "Customer added successfully" });
+    }
+  );
+});
+
+app.get("/customers", (req, res) => {
+  const custId = req.query.cust_id ? req.query.cust_id : "";
+
   const sql = `
     SELECT c.cust_id,
     c.First_name,
@@ -41,7 +60,6 @@ app.get("/customers", (req, res) => {
     LEFT JOIN tran_details t ON a.acc_number = t.acc_number
     WHERE c.cust_id LIKE ?`;
 
-  // Execute the query with the provided cust_id
   db.query(sql, [`%${custId}%`], (err, data) => {
     if (err) {
       console.error("Database query error:", err);
@@ -51,8 +69,6 @@ app.get("/customers", (req, res) => {
   });
 });
 
-
-// Start the server and listen on the specified port
 app.listen(PORT, () => {
   console.log(`Listening from port ${PORT}`);
 });
